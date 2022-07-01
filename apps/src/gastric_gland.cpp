@@ -33,20 +33,56 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "Hello.hpp"
+/**
+ * @file
+ *
+ * This file gives an example of how you can create your own executable
+ * in a user project.
+ */
+
+#include <iostream>
+#include <string>
+
+#include "ExecutableSupport.hpp"
 #include "Exception.hpp"
+#include "PetscTools.hpp"
+#include "PetscException.hpp"
 
-Hello::Hello(const std::string& rMessage)
-    : mMessage(rMessage)
-{
-}
+#include "GastricGlandSimulation.hpp"
 
-std::string Hello::GetMessage()
+int main(int argc, char *argv[])
 {
-    return mMessage;
-}
+    // This sets up PETSc and prints out copyright information, etc.
+    ExecutableSupport::StandardStartup(&argc, &argv);
 
-void Hello::Complain(const std::string& rComplaint)
-{
-    EXCEPTION(rComplaint);
+    int exit_code = ExecutableSupport::EXIT_OK;
+
+    // You should put all the main code within a try-catch, to ensure that
+    // you clean up PETSc before quitting.
+    try
+    {
+      if (argc<0)
+        {
+            ExecutableSupport::PrintError("Usage: ExampleApp arguments ...", true);
+            exit_code = ExecutableSupport::EXIT_BAD_ARGUMENTS;
+        }
+        else
+        {
+            GastricGlandSimulation sim = GastricGlandSimulation();
+            sim.simplifiedModel("Small Test", 8, 40, 40.0);
+        }
+    }
+    catch (const Exception& e)
+    {
+        ExecutableSupport::PrintError(e.GetMessage());
+        exit_code = ExecutableSupport::EXIT_ERROR;
+    }
+
+    // Optional - write the machine info to file.
+    ExecutableSupport::WriteMachineInfoFile("machine_info");
+
+    // End by finalizing PETSc, and returning a suitable exit code.
+    // 0 means 'no error'
+    ExecutableSupport::FinalizePetsc();
+    return exit_code;
 }
