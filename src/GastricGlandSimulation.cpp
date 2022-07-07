@@ -3,7 +3,9 @@
 #include "CylindricalHoneycombMeshGenerator.hpp"
 #include "GastricGlandCellsGenerator.hpp"
 #include "UniformG1GenerationalCellCycleModel.hpp"
-#include "MeshBasedCellPopulationWithGhostNodes.hpp"
+#include "GastricGlandCellCycleModel.hpp"
+#include "WntConcentration.hpp"
+#include "GastricGlandCellPopulation.hpp"
 #include "CryptSimulation2d.hpp"
 
 #include "VoronoiDataWriter.hpp"
@@ -21,6 +23,7 @@
 
 #include "LinearSpringWithVariableSpringConstantsForce.hpp"
 #include "SloughingCellKiller.hpp"
+#include "GastricGlandBaseCellKiller.hpp"
 
 #include <iostream>
 #include <vector>
@@ -28,7 +31,10 @@
 void GastricGlandSimulation::simplifiedModel(
     std::string testName,
     int nWidth, int nHeight,
-    double glandHeight)
+    double glandHeight,
+    bool useAreaBasedDampingConstant,
+    bool useEdgeBasedSpringConstant,
+    double areaForDivision)
 {
     setUp();
 
@@ -36,11 +42,20 @@ void GastricGlandSimulation::simplifiedModel(
     Cylindrical2dMesh* p_mesh = generator.GetCylindricalMesh();
     std::vector<unsigned int> location_indices = generator.GetCellLocationIndices();
 
+    std::cout << "Initialized Mesh" << std::endl;
+
     std::vector<CellPtr> cells;
-    GastricGlandCellsGenerator<UniformG1GenerationalCellCycleModel> cells_generator;
+    GastricGlandCellsGenerator<GastricGlandCellCycleModel> cells_generator;
     cells_generator.Generate(cells, p_mesh, location_indices, true);
 
-    MeshBasedCellPopulationWithGhostNodes<2> cell_population(*p_mesh, cells, location_indices);
+    std::cout << "Created Cells" << std::endl;
+
+    GastricGlandCellPopulation<2> cell_population(*p_mesh, cells, location_indices, 0.86 * areaForDivision);
+
+    WntConcentration<2>::Instance()->SetType(LINEAR);
+    WntConcentration<2>::Instance()->SetCellPopulation(cell_population);
+    WntConcentration<2>::Instance()->SetCryptLength(glandHeight);
+    std::cout << "Setup Wnt Concentration" << std::endl;
 
     CryptSimulation2d simulator(cell_population);
 
@@ -57,8 +72,10 @@ void GastricGlandSimulation::simplifiedModel(
     
     simulator.SetSamplingTimestepMultiple(12);
 
+    cell_population.SetAreaBasedDampingConstant(useAreaBasedDampingConstant);
+
     MAKE_PTR(LinearSpringWithVariableSpringConstantsForce<2>, p_linear_force);
-    p_linear_force->SetEdgeBasedSpringConstant(false);
+    p_linear_force->SetEdgeBasedSpringConstant(useEdgeBasedSpringConstant);
     simulator.AddForce(p_linear_force);
 
     MAKE_PTR_ARGS(SloughingCellKiller<2>, p_killer, (&cell_population, glandHeight));

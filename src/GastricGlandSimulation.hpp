@@ -41,8 +41,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#ifndef _MESH_BASED_CRYPT_SIMULATIONS_HPP_
-#define _MESH_BASED_CRYPT_SIMULATIONS_HPP_
+#ifndef _MESH_BASED_GASTRIC_GLAND_SIMULATION_HPP
+#define _MESH_BASED_GASTRIC_GLAND_SIMULATION_HPP
 
 /*
  * = Examples showing how to run crypt simulations on periodic meshes with different cell-cycle models =
@@ -66,6 +66,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RandomNumberGenerator.hpp"
 #include "CellPropertyRegistry.hpp"
 #include "CellId.hpp"
+#include "SignalGradient.hpp"
 
 class GastricGlandSimulation
 {
@@ -76,7 +77,10 @@ public:
     void simplifiedModel(
         std::string testName,
         int nWidth, int nHeight,
-        double glandHeight
+        double glandHeight,
+        bool useAreaBasedDampingConstant,
+        bool useEdgeBasedSpringConstant,
+        double areaForDivision // Fraction of mature area required for division
     );
 
 
@@ -98,6 +102,7 @@ public:
         RandomNumberGenerator::Destroy();
         CellPropertyRegistry::Instance()->Clear(); // Destroys properties which are still held by a shared pointer
         //WntConcentration<2>::Destroy();
+        SignalGradient<2>::Destroy();
     }
 };
 

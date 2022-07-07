@@ -50,14 +50,16 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  LINEAR - for cylindrical crypt model
  *  RADIAL - for crypt projection model
  */
+
+
 typedef enum SignalGradientType_
 {
-    NONE,
-    LINEAR,
-    RADIAL,
-    EXPONENTIAL,
-    NEGLINEAR,
-    NEGEXPONENTIAL
+    SG_NONE,
+    SG_LINEAR,
+    SG_RADIAL,
+    SG_EXPONENTIAL,
+    SG_NEGLINEAR,
+    SG_NEGEXPONENTIAL
 } SignalGradientType;
 
 
@@ -65,7 +67,7 @@ typedef enum SignalGradientType_
  *  Singleton Wnt concentration object.
  */
 template<unsigned DIM>
-class SignalGradient : public SerializableSingleton<SignalGradientType<DIM> >
+class SignalGradient : public SerializableSingleton<SignalGradient<DIM> >
 {
 private:
 
@@ -149,18 +151,18 @@ private:
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version)
     {
-        bool is_set_up = IsWntSetUp();
+        bool is_set_up = IsSetUp();
         archive & is_set_up;
         if (is_set_up)
         {
             archive & mCryptLength;
             archive & mLengthSet;
-            archive & mWntType;
+            archive & mType;
             archive & mpCellPopulation;
             archive & mTypeSet;
-            archive & mConstantWntValueForTesting;
-            archive & mUseConstantWntValueForTesting;
-            archive & mWntConcentrationParameter;
+            archive & mConstantValueForTesting;
+            archive & mUseConstantValueForTesting;
+            archive & mConcentrationParameter;
             archive & mCryptProjectionParameterA;
             archive & mCryptProjectionParameterB;
         }
@@ -182,6 +184,8 @@ public:
      * @return  A pointer to the singleton WntConcentration object.
      */
     static SignalGradient* Instance();
+    static SignalGradient* BmpInstance();
+    static SignalGradient* EgfInstance();
 
     /**
      * Destructor - frees up the singleton instance.
@@ -318,4 +322,4 @@ public:
     void SetCryptProjectionParameterB(double cryptProjectionParameterB);
 };
 
-#endif /*WNTCONCENTRATION_HPP_*/
+#endif /*SIGNALGRADIENTTYPE_HPP_*/

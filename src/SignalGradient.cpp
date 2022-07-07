@@ -52,7 +52,7 @@ SignalGradient<DIM>* SignalGradient<DIM>::Instance()
     return mpInstance;
 }
 template<unsigned DIM>
-SignalGradient<DIM>* SignalGradient<DIM>::Instance()
+SignalGradient<DIM>* SignalGradient<DIM>::BmpInstance()
 {
     if (mpBmpInstance == nullptr)
     {
@@ -61,7 +61,7 @@ SignalGradient<DIM>* SignalGradient<DIM>::Instance()
     return mpBmpInstance;
 }
 template<unsigned DIM>
-SignalGradient<DIM>* SignalGradient<DIM>::Instance()
+SignalGradient<DIM>* SignalGradient<DIM>::EgfInstance()
 {
     if (mpEgfInstance == nullptr)
     {
@@ -74,7 +74,7 @@ template<unsigned DIM>
 SignalGradient<DIM>::SignalGradient()
     : mCryptLength(DOUBLE_UNSET),
       mLengthSet(false),
-      mType(NONE),
+      mType(SG_NONE),
       mpCellPopulation(nullptr),
       mTypeSet(false),
       mConstantValueForTesting(0),
@@ -126,7 +126,7 @@ double SignalGradient<DIM>::GetLevel(CellPtr pCell)
 
     double height;
 
-    if (mWntType == RADIAL)
+    if (mType == SG_RADIAL)
     {
         double a = GetCryptProjectionParameterA();
         double b = GetCryptProjectionParameterB();
@@ -200,14 +200,14 @@ void SignalGradient<DIM>::SetType(SignalGradientType type)
     {
         EXCEPTION("Destroy has not been called");
     }
-    mWntType = type;
+    mType = type;
     mTypeSet = true;
 }
 
 template<unsigned DIM>
 double SignalGradient<DIM>::GetLevel(double height)
 {
-    if (mWntType == NONE)
+    if (mType == SG_NONE)
     {
         return 0.0;
     }
@@ -218,7 +218,7 @@ double SignalGradient<DIM>::GetLevel(double height)
     double wnt_level = -1.0; // Test this is changed before leaving method.
 
     // The first type of Wnt concentration to try
-    if (mType==LINEAR || mType==RADIAL)
+    if (mType==SG_LINEAR || mType==SG_RADIAL)
     {
         if ((height >= -1e-9) && (height < mConcentrationParameter*GetCryptLength()))
         {
@@ -230,7 +230,7 @@ double SignalGradient<DIM>::GetLevel(double height)
         }
     }
 
-    if (mType==EXPONENTIAL)
+    if (mType==SG_EXPONENTIAL)
     {
         if ((height >= -1e-9) && (height < GetCryptLength()))
         {
@@ -242,7 +242,7 @@ double SignalGradient<DIM>::GetLevel(double height)
         }
     }
 
-    if (mType==NEGLINEAR)
+    if (mType==SG_NEGLINEAR)
     {
         if ((height >= -1e-9) && (height < mConcentrationParameter*GetCryptLength()))
         {
@@ -254,7 +254,7 @@ double SignalGradient<DIM>::GetLevel(double height)
         }
     }
 
-    if (mType==NEGEXPONENTIAL)
+    if (mType==SG_NEGEXPONENTIAL)
     {
         if ((height >= -1e-9) && (height < GetCryptLength()))
         {
@@ -276,16 +276,16 @@ c_vector<double, DIM> SignalGradient<DIM>::GetGradient(c_vector<double, DIM>& rL
 {
     c_vector<double, DIM> wnt_gradient = zero_vector<double>(DIM);
 
-    if (mType!=NONE)
+    if (mType!=SG_NONE)
     {
-        if (mType==LINEAR)
+        if (mType==SG_LINEAR)
         {
             if ((rLocation[DIM-1] >= -1e-9) && (rLocation[DIM-1] < mConcentrationParameter*GetCryptLength()))
             {
                 wnt_gradient[DIM-1] = -1.0/(mConcentrationParameter*GetCryptLength());
             }
         }
-        else if (mType==RADIAL) // RADIAL Wnt concentration
+        else if (mType==SG_RADIAL) // RADIAL Wnt concentration
         {
             double a = GetCryptProjectionParameterA();
             double b = GetCryptProjectionParameterB();
@@ -304,7 +304,7 @@ c_vector<double, DIM> SignalGradient<DIM>::GetGradient(c_vector<double, DIM>& rL
                 wnt_gradient[i] = rLocation[i]*dwdr/r;
             }
         }
-        else if (mType == NEGLINEAR)
+        else if (mType == SG_NEGLINEAR)
         {
             if ((rLocation[DIM-1] >= -1e-9) && (rLocation[DIM-1] < mConcentrationParameter*GetCryptLength()))
             {
@@ -323,7 +323,7 @@ template<unsigned DIM>
 bool SignalGradient<DIM>::IsSetUp()
 {
     bool result = false;
-    if (mTypeSet && mLengthSet && mpCellPopulation!=nullptr && mType!=NONE)
+    if (mTypeSet && mLengthSet && mpCellPopulation!=nullptr && mType!=SG_NONE)
     {
         result = true;
     }
@@ -341,7 +341,7 @@ void SignalGradient<DIM>::SetConstantValueForTesting(double value)
     mUseConstantValueForTesting = true;
     if (!mTypeSet)
     {
-        mType = NONE;
+        mType = SG_NONE;
     }
 }
 

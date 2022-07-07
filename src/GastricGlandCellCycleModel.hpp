@@ -33,19 +33,17 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef GASTRICGLANDCELCYCLEMODEL_HPP_
-#define GASTRICGLANDCELCYCLEMODEL_HPP_
+#ifndef GASTRICGLANDCELLCYCLEMODEL_HPP
+#define GASTRICGLANDCELLCYCLEMODEL_HPP
 
-#include "AbstractSimpleGenerationalCellCycleModel.hpp"
+#include "AbstractSimplePhaseBasedCellCycleModel.hpp"
+#include "RandomNumberGenerator.hpp"
+#include "WntConcentration.hpp"
 
 /**
- *  Fixed cell-cycle model.
- *
- *  Cell cycle time is deterministic for stem and transit cells (with values
- *  StemCellG1Duration + SG2MDuration
- *  and TransitCellG1Duration + SG2MDuration (values found in AbstractCellCycleModel))
+ * Simple Wnt-dependent cell-cycle model.
  */
-class GastricGlandCellCycleModel : public AbstractSimpleGenerationalCellCycleModel
+class GastricGlandCellCycleModel : public AbstractSimplePhaseBasedCellCycleModel
 {
 private:
 
@@ -60,10 +58,44 @@ private:
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version)
     {
-        archive & boost::serialization::base_object<AbstractSimpleGenerationalCellCycleModel>(*this);
+        archive & boost::serialization::base_object<AbstractSimplePhaseBasedCellCycleModel>(*this);
+
+        RandomNumberGenerator* p_gen = RandomNumberGenerator::Instance();
+        archive & *p_gen;
     }
 
 protected:
+
+    /**
+     * Whether to use different mean G1 durations for different cell types.
+     * For use in SetG1Duration().
+     */
+
+    double mIsthmusBeginHeight;
+    double mIsthmusEndHeight;
+    double mBaseHeight;
+
+    /**
+     * @return the Wnt level experienced by the cell.
+     */
+    double GetWntLevel() const;
+
+    /**
+     * @return the type of Wnt concentration (LINEAR, RADIAL, EXPONENTIAL or NONE).
+     * This affects how the cell cycle phase is updated.
+     */
+    WntConcentrationType GetWntType();
+
+    /**
+     * Stochastically set the G1 duration. The G1 duration is taken
+     * from a normal distribution whose mean is the G1 duration given
+     * in AbstractPhaseBasedCellCycleModel, for the cell type, and whose standard deviation
+     * is 1.
+     *
+     * Called on cell creation at the start of a simulation, and for both
+     * parent and daughter cells at cell division.
+     */
+    void SetG1Duration();
 
     /**
      * Protected copy-constructor for use by CreateCellCycleModel.
@@ -83,19 +115,43 @@ protected:
 public:
 
     /**
-     * Default constructor. Note that mBirthTime is set in
-     * AbstractCellCycleModel() and mG1Duration is set in
-     * AbstractSimplePhaseBasedCellCycleModel().
+     * Constructor - just a default, mBirthTime is now set in the AbstractPhaseBasedCellCycleModel class.
+     * mG1Duration is set very high, it is set for the individual cells when InitialiseDaughterCell is called.
      */
     GastricGlandCellCycleModel();
+
+    /**
+     * Overridden UpdateCellCyclePhase() method.
+     */
+    virtual void UpdateCellCyclePhase();
+
+    /**
+     * Overridden InitialiseDaughterCell() method.
+     */
+    virtual void InitialiseDaughterCell();
 
     /**
      * Overridden builder method to create new copies of
      * this cell-cycle model.
      *
-     * @return new cell-cycle model
+     * @return the new cell-cycle model
      */
-    AbstractCellCycleModel* CreateCellCycleModel();
+    virtual AbstractCellCycleModel* CreateCellCycleModel();
+
+    /**
+     * Overridden CanCellTerminallyDifferentiate() method.
+     * @return whether cell can terminally differentiate
+     */
+    virtual bool CanCellTerminallyDifferentiate();
+
+    double GetIsthmusBeginHeight() const;
+    void SetIsthmusBeginHeight(double height);
+
+    double GetIsthmusEndHeight() const;
+    void SetIsthmusEndHeight(double height);
+
+    double GetBaseHeight() const;
+    void SetBaseHeight(double height);
 
     /**
      * Overridden OutputCellCycleModelParameters() method.

@@ -49,12 +49,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "UniformG1GenerationalCellCycleModel.hpp"
 #include "FixedG1GenerationalCellCycleModel.hpp"
-#include "TysonNovakCellCycleModel.hpp"
-#include "WntCellCycleModel.hpp"
-#include "SimpleWntCellCycleModel.hpp"
-#include "StochasticWntCellCycleModel.hpp"
-#include "VanLeeuwen2009WntSwatCellCycleModelHypothesisOne.hpp"
-#include "VanLeeuwen2009WntSwatCellCycleModelHypothesisTwo.hpp"
 #include "Exception.hpp"
 #include "StemCellProliferativeType.hpp"
 #include "TransitCellProliferativeType.hpp"
@@ -105,9 +99,9 @@ public:
                   AbstractMesh<2,2>* pMesh,
                   const std::vector<unsigned> locationIndices,
                   bool randomBirthTimes,
-                  double yBase = 0.3,
-                  double yNeck = 22.0,
-                  double yIsthmus = 23.0,
+                  double yBase = 0.5,
+                  double yNeck = 38.0,
+                  double yIsthmus = 40.0,
                   bool initialiseCells = false);
 };
 
@@ -195,17 +189,17 @@ void GastricGlandCellsGenerator<CELL_CYCLE_MODEL>::Generate(
         // Set the cell's proliferative type, dependent on its height up the crypt and whether it can terminally differentiate
         if (y <= yBase)
         {
-            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<DifferentiatedCellProliferativeType>());
+            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<TransitCellProliferativeType>());
             birth_time *= typical_transit_cycle_time;
         }
         else if (y <= yNeck)
         {
-            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<TransitCellProliferativeType>());
+            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<DifferentiatedCellProliferativeType>());
             birth_time *= typical_transit_cycle_time;
         }
         else if (y <= yIsthmus)
         {
-            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<StemCellProliferativeType>());
+            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<TransitCellProliferativeType>());
             birth_time *= typical_stem_cycle_time;
         }
         else
