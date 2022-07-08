@@ -12,11 +12,13 @@ GastricGlandCellPopulation<DIM>::GastricGlandCellPopulation(
     std::vector<CellPtr>& rCells,
     const std::vector<unsigned> locationIndices,
     double mitosisRequiredSize,
+    double foveolarSizeMultiplier,
     bool deleteMesh,
     double ghostSpringStiffness)
     :   MeshBasedCellPopulationWithGhostNodes<DIM>(
             rMesh, rCells, locationIndices, deleteMesh, ghostSpringStiffness),
-        mMitosisRequiredSize(mitosisRequiredSize)
+        mMitosisRequiredSize(mitosisRequiredSize),
+        mFoveolarSizeMultiplier(foveolarSizeMultiplier)
 {}
 
 template<unsigned DIM>
@@ -25,7 +27,8 @@ GastricGlandCellPopulation<DIM>::GastricGlandCellPopulation(
     double mitosisRequiredSize,
     double ghostSpringStiffness)
     :   MeshBasedCellPopulationWithGhostNodes<DIM>(rMesh, ghostSpringStiffness),
-        mMitosisRequiredSize(mitosisRequiredSize)
+        mMitosisRequiredSize(mitosisRequiredSize),
+        mFoveolarsizeMultiplier(foveolarSizeMultiplier)
 {
 }
 
@@ -38,7 +41,7 @@ inline double GetCellRestLength(CellPtr pCell)
 {
     if (pCell->GetCellProliferativeType()->IsType<FoveolarCellProliferativeType>())
     {
-        return 0.3;
+        return 0.5 * mFoveolarSizeMultiplier;
     }
     else
     {
@@ -78,10 +81,23 @@ void GastricGlandCellPopulation<DIM>::SetMitosisRequiredSize(double size)
     mMitosisRequiredSize = size;
 }
 
+template <unsigned DIM>
+double GastricGlandCellPopulation<DIM>::GetFoveolarSizeMultiplier() const
+{
+    return mFoveolarSizeMultiplier;
+}
+
+template <unsigned DIM>
+void GastricGlandCellPopulation<DIM>::SetFoveolarSizeMultiplier(double mul)
+{
+    mFoveolarSizeMultiplier = mul;
+}
+
 template<unsigned DIM>
 void GastricGlandCellPopulation<DIM>::OutputCellPopulationParameters(out_stream& rParamsFile)
 {
     *rParamsFile << "\t\t\t<MitosisRequiredSize>" << mMitosisRequiredSize << "</MitosisRequiredSize>\n";
+    *rParamsFile << "\t\t\t<FoveolarSizeMultiplier>" << mFoveolarSizeMultiplier << "</FoveolarSizeMultiplier>\n";
 
     // Call method on direct parent class
     MeshBasedCellPopulationWithGhostNodes<DIM>::OutputCellPopulationParameters(rParamsFile);

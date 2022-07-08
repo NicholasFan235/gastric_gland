@@ -80,7 +80,8 @@ public:
         double glandHeight,
         bool useAreaBasedDampingConstant,
         bool useEdgeBasedSpringConstant,
-        double areaForDivision // Fraction of mature area required for division
+        double areaForDivision, // Fraction of mature area required for division,
+        double foveolarSizeMultiplier // Multiplier for foveolar cell rest length (foveolar cells smaller)
     );
 
 

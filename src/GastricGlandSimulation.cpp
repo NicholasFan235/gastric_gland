@@ -34,7 +34,8 @@ void GastricGlandSimulation::simplifiedModel(
     double glandHeight,
     bool useAreaBasedDampingConstant,
     bool useEdgeBasedSpringConstant,
-    double areaForDivision)
+    double areaForDivision,
+    double foveolarSizeMultiplier)
 {
     setUp();
 
@@ -50,7 +51,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     std::cout << "Created Cells" << std::endl;
 
-    GastricGlandCellPopulation<2> cell_population(*p_mesh, cells, location_indices, areaForDivision);
+    GastricGlandCellPopulation<2> cell_population(*p_mesh, cells, location_indices, areaForDivision, foveolarSizeMultiplier);
 
     WntConcentration<2>::Instance()->SetType(LINEAR);
     WntConcentration<2>::Instance()->SetCellPopulation(cell_population);
@@ -66,7 +67,7 @@ void GastricGlandSimulation::simplifiedModel(
     cell_population.AddCellWriter<CellAncestorWriter>();
     cell_population.AddCellWriter<CellAgesWriter>();
 
-    simulator.SetOutputDirectory("ToyGastricGland/");
+    simulator.SetOutputDirectory(testName + "/");
     std::cout << "Writing to output directory: " << simulator.GetOutputDirectory() << std::endl;
     simulator.SetEndTime(100);
     

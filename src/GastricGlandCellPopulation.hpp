@@ -25,6 +25,7 @@ private:
 
 protected:
     double mMitosisRequiredSize;
+    double mFoveolarSizeMultiplier;
 
 public:
     GastricGlandCellPopulation(
@@ -32,12 +33,14 @@ public:
         std::vector<CellPtr>& rCells,
         const std::vector<unsigned> locationIndices,
         double mitosisRequiredSize,
+        double foveolarSizeMultiplier=0.6,
         bool deleteMesh = false,
         double ghostSpringStiffness=15.0);
     
     GastricGlandCellPopulation(
         MutableMesh<DIM, DIM>& rMesh,
         double mitosisRequiredSize,
+        double foveolarSizeMultiplier=0.6,
         double ghostSpringStiffness=15.0);
 
     virtual ~GastricGlandCellPopulation();
@@ -48,6 +51,9 @@ public:
 
     double GetMitosisRequiredSize() const;
     void SetMitosisRequiredSize(double size);
+
+    double GetFoveolarSizeMultiplier() const;
+    void SetFoveolarSizeMultiplier(double mul);
 
     void OutputCellPopulationParameters(out_stream& rParamsFile);
 
@@ -71,6 +77,7 @@ namespace boost
             const MutableMesh<DIM,DIM>* p_mesh = &(t->rGetMesh());
             ar << p_mesh;
             ar << t->GetMitosisRequiredSize();
+            ar << t->GetFoveolarSizeMultiplier();
         }
 
         /**
@@ -86,9 +93,11 @@ namespace boost
             ar >> p_mesh;
             double mitosisRequiredSize;
             ar >> mitosisRequiredSize;
+            double foveolarSizeMultiplier;
+            ar >> foveolarSizeMultiplier;
 
             // Invoke inplace constructor to initialise instance
-            ::new(t)GastricGlandCellPopulation<DIM>(*p_mesh, mitosisRequiredSize);
+            ::new(t)GastricGlandCellPopulation<DIM>(*p_mesh, mitosisRequiredSize, foveolarSizeMultiplier);
         }
 
     } // namespace serialization
