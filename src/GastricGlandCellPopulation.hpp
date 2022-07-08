@@ -40,10 +40,12 @@ public:
     GastricGlandCellPopulation(
         MutableMesh<DIM, DIM>& rMesh,
         double mitosisRequiredSize,
-        double foveolarSizeMultiplier=0.6,
+        double foveolarSizeMultiplier,
         double ghostSpringStiffness=15.0);
 
     virtual ~GastricGlandCellPopulation();
+
+    inline double GetCellRestLength(CellPtr pCell);
 
     virtual bool IsRoomToDivide(CellPtr pCell) override;
 

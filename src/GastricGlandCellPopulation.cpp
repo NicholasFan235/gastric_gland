@@ -25,10 +25,11 @@ template<unsigned DIM>
 GastricGlandCellPopulation<DIM>::GastricGlandCellPopulation(
     MutableMesh<DIM, DIM>& rMesh,
     double mitosisRequiredSize,
+    double foveolarSizeMultiplier,
     double ghostSpringStiffness)
     :   MeshBasedCellPopulationWithGhostNodes<DIM>(rMesh, ghostSpringStiffness),
         mMitosisRequiredSize(mitosisRequiredSize),
-        mFoveolarsizeMultiplier(foveolarSizeMultiplier)
+        mFoveolarSizeMultiplier(foveolarSizeMultiplier)
 {
 }
 
@@ -37,7 +38,8 @@ GastricGlandCellPopulation<DIM>::~GastricGlandCellPopulation()
 {
 }
 
-inline double GetCellRestLength(CellPtr pCell)
+template <unsigned DIM>
+inline double GastricGlandCellPopulation<DIM>::GetCellRestLength(CellPtr pCell)
 {
     if (pCell->GetCellProliferativeType()->IsType<FoveolarCellProliferativeType>())
     {
