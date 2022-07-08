@@ -53,6 +53,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StemCellProliferativeType.hpp"
 #include "TransitCellProliferativeType.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
+#include "NeckCellProliferativeType.hpp"
+#include "FoveolarCellProliferativeType.hpp"
 
 
 /**
@@ -189,22 +191,26 @@ void GastricGlandCellsGenerator<CELL_CYCLE_MODEL>::Generate(
         // Set the cell's proliferative type, dependent on its height up the crypt and whether it can terminally differentiate
         if (y <= yBase)
         {
+            // In base
             p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<TransitCellProliferativeType>());
             birth_time *= typical_transit_cycle_time;
         }
         else if (y <= yNeck)
         {
-            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<DifferentiatedCellProliferativeType>());
+            // In Neck
+            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<NeckCellProliferativeType>());
             birth_time *= typical_transit_cycle_time;
         }
         else if (y <= yIsthmus)
         {
+            // In Isthmus
             p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<TransitCellProliferativeType>());
             birth_time *= typical_stem_cycle_time;
         }
         else
         {
-            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<DifferentiatedCellProliferativeType>());
+            // In Foveolar
+            p_cell->SetCellProliferativeType(CellPropertyRegistry::Instance()->Get<FoveolarCellProliferativeType>());
             birth_time *= typical_transit_cycle_time;
         }
 
