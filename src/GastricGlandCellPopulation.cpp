@@ -38,7 +38,7 @@ inline double GetCellRestLength(CellPtr pCell)
 {
     if (pCell->GetCellProliferativeType()->IsType<FoveolarCellProliferativeType>())
     {
-        return 0.4;
+        return 0.3;
     }
     else
     {
