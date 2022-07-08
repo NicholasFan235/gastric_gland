@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "NeckCellProliferativeType.hpp"
 
 NeckCellProliferativeType::NeckCellProliferativeType()
-    : DifferentiatedCellProliferativeType()
+    : DifferentiatedCellProliferativeType(5)
 {}
 
 #include "SerializationExportWrapperForCpp.hpp"

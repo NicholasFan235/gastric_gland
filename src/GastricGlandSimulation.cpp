@@ -50,7 +50,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     std::cout << "Created Cells" << std::endl;
 
-    GastricGlandCellPopulation<2> cell_population(*p_mesh, cells, location_indices, 0.86 * areaForDivision);
+    GastricGlandCellPopulation<2> cell_population(*p_mesh, cells, location_indices, areaForDivision);
 
     WntConcentration<2>::Instance()->SetType(LINEAR);
     WntConcentration<2>::Instance()->SetCellPopulation(cell_population);

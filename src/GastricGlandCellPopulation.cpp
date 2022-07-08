@@ -34,24 +34,27 @@ GastricGlandCellPopulation<DIM>::~GastricGlandCellPopulation()
 {
 }
 
-template <unsigned DIM>
-bool GastricGlandCellPopulation<DIM>::IsRoomToDivide(CellPtr pCell)
-{
-    double area_cell = this->GetVolumeOfCell(pCell);
-
-    return area_cell >= mMitosisRequiredSize;
-}
-
 inline double GetCellRestLength(CellPtr pCell)
 {
-    if (pCell->GetCellProliferativeType()->IsType<NeckCellProliferativeType>())
+    if (pCell->GetCellProliferativeType()->IsType<FoveolarCellProliferativeType>())
     {
-        return 0.25;
+        return 0.4;
     }
     else
     {
         return 0.5;
     }
+}
+
+template <unsigned DIM>
+bool GastricGlandCellPopulation<DIM>::IsRoomToDivide(CellPtr pCell)
+{
+    double area_cell = this->GetVolumeOfCell(pCell);
+    double rest_length = GetCellRestLength(pCell);
+    double side_length = 0.577 * rest_length * 2; // Side length assuming hexagonal packing: 2 * tan(30) * rest_length
+    double hexagon_area = 2.598 * side_length * side_length; // Hexagon area: 3sqrt(3)/2 * side_length^2
+
+    return area_cell >= mMitosisRequiredSize * hexagon_area;
 }
 
 template <unsigned DIM>

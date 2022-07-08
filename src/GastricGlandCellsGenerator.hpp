@@ -100,8 +100,8 @@ public:
                   const std::vector<unsigned> locationIndices,
                   bool randomBirthTimes,
                   double yBase = 0.5,
-                  double yNeck = 38.0,
-                  double yIsthmus = 40.0,
+                  double yNeck = 28.0,
+                  double yIsthmus = 30.0,
                   bool initialiseCells = false);
 };
 
