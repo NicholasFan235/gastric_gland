@@ -71,7 +71,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     simulator.SetOutputDirectory(testName + "/");
     std::cout << "Writing to output directory: " << simulator.GetOutputDirectory() << std::endl;
-    simulator.SetEndTime(200);
+    simulator.SetEndTime(1000);
     
     simulator.SetSamplingTimestepMultiple(12);
 
@@ -90,6 +90,7 @@ void GastricGlandSimulation::simplifiedModel(
     simulator.UseJiggledBottomCells();
     simulator.LabelBaseCellAncestors();
     simulator.LabelIsthmusCellAncestors();
+    simulator.LabelNeckCellAncestors();
 
     simulator.Solve();
     tearDown();
