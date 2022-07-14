@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FoveolarCellProliferativeType.hpp"
 
 FoveolarCellProliferativeType::FoveolarCellProliferativeType()
-    : DifferentiatedCellProliferativeType(3)
+    : DifferentiatedCellProliferativeType(4)
 {}
 
 #include "SerializationExportWrapperForCpp.hpp"

@@ -7,6 +7,7 @@
 #include "WntConcentration.hpp"
 #include "GastricGlandCellPopulation.hpp"
 #include "CryptSimulation2d.hpp"
+#include "GastricGlandSimulation2d.hpp"
 
 #include "VoronoiDataWriter.hpp"
 #include "CellPopulationAreaWriter.hpp"
@@ -24,6 +25,7 @@
 #include "LinearSpringWithVariableSpringConstantsForce.hpp"
 #include "SloughingCellKiller.hpp"
 #include "GastricGlandBaseCellKiller.hpp"
+#include "ExperimentalParietalCellKiller.hpp"
 
 #include <iostream>
 #include <vector>
@@ -58,7 +60,7 @@ void GastricGlandSimulation::simplifiedModel(
     WntConcentration<2>::Instance()->SetCryptLength(glandHeight);
     std::cout << "Setup Wnt Concentration" << std::endl;
 
-    CryptSimulation2d simulator(cell_population);
+    GastricGlandSimulation2d simulator(cell_population);
 
     cell_population.SetWriteVtkAsPoints(false);
     cell_population.AddPopulationWriter<VoronoiDataWriter>();
@@ -69,7 +71,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     simulator.SetOutputDirectory(testName + "/");
     std::cout << "Writing to output directory: " << simulator.GetOutputDirectory() << std::endl;
-    simulator.SetEndTime(100);
+    simulator.SetEndTime(200);
     
     simulator.SetSamplingTimestepMultiple(12);
 
@@ -82,7 +84,12 @@ void GastricGlandSimulation::simplifiedModel(
     MAKE_PTR_ARGS(SloughingCellKiller<2>, p_killer, (&cell_population, glandHeight));
     simulator.AddCellKiller(p_killer);
 
+    //MAKE_PTR_ARGS(ExperimentalParietalCellKiller<2>, p_experiment, (&cell_population, 0.4, 100));
+    //simulator.AddCellKiller(p_experiment);
+
     simulator.UseJiggledBottomCells();
+    simulator.LabelBaseCellAncestors();
+    simulator.LabelIsthmusCellAncestors();
 
     simulator.Solve();
     tearDown();

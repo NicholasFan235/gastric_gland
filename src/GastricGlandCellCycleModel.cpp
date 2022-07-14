@@ -94,7 +94,7 @@ void GastricGlandCellCycleModel::SetG1Duration()
     }
     else if (mpCell->GetCellProliferativeType()->IsSubType<DifferentiatedCellProliferativeType>())
     {
-        mG1Duration = p_gen->NormalRandomDeviate(GetTransitCellG1Duration(), 1.0);
+        mG1Duration = DBL_MAX; //p_gen->NormalRandomDeviate(GetTransitCellG1Duration(), 1.0);
     }
     else
     {
@@ -138,7 +138,7 @@ void GastricGlandCellCycleModel::UpdateCellCyclePhase()
     {
         // If in Neck
         if (!mpCell->GetCellProliferativeType()->IsType<NeckCellProliferativeType>()
-            && mCurrentCellCyclePhase == G_ONE_PHASE)
+            && (mCurrentCellCyclePhase == G_ONE_PHASE || mCurrentCellCyclePhase == G_ZERO_PHASE))
         {
             boost::shared_ptr<AbstractCellProperty> p_neck_type =
                 mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<NeckCellProliferativeType>();
@@ -163,36 +163,38 @@ void GastricGlandCellCycleModel::UpdateCellCyclePhase()
     {
         // If in Foveolar
         if (!mpCell->GetCellProliferativeType()->IsType<FoveolarCellProliferativeType>()
-            && mCurrentCellCyclePhase == G_ONE_PHASE)
+            && (mCurrentCellCyclePhase == G_ONE_PHASE || mCurrentCellCyclePhase == G_ZERO_PHASE))
         {
             boost::shared_ptr<AbstractCellProperty> p_neck_type =
                 mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<FoveolarCellProliferativeType>();
             mpCell->SetCellProliferativeType(p_neck_type);
         }
     }
-    /*if ((mIsthmusBeginHeight < height && height < mIsthmusEndHeight) || (height < mBaseHeight))
+    
+
+    double time_since_birth = GetAge();
+    assert(time_since_birth >= 0);
+
+    if (mpCell->GetCellProliferativeType()->IsSubType<DifferentiatedCellProliferativeType>())
     {
-        boost::shared_ptr<AbstractCellProperty> p_transit_type =
-            mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<TransitCellProliferativeType>();
-        if (mpCell->GetCellProliferativeType() != p_transit_type)
-        {
-            // Change the cell's type if it just transitioned
-            mpCell->SetCellProliferativeType(p_transit_type);
-            SetG1Duration(); // Reset the G1 duration to a transit cell's G1 duration
-            mG1Duration += GetAge(); // Put cell at start of G1 phase, otherwise aged cell will immediately divide
-        }
+        mCurrentCellCyclePhase = G_ZERO_PHASE;
     }
-    else
+    else if (time_since_birth < GetMDuration())
     {
-        // The cell is set to have DifferentiatedCellProliferativeType and so in G0 phase
-        boost::shared_ptr<AbstractCellProperty> p_diff_type =
-            mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<DifferentiatedCellProliferativeType>();
-        if (mpCell->GetCellProliferativeType() != p_diff_type && mCurrentCellCyclePhase == G_ONE_PHASE)
-        {
-            mpCell->SetCellProliferativeType(p_diff_type);
-        }
-    }*/
-    AbstractSimplePhaseBasedCellCycleModel::UpdateCellCyclePhase();
+        mCurrentCellCyclePhase = M_PHASE;
+    }
+    else if (time_since_birth < GetMDuration() + mG1Duration)
+    {
+        mCurrentCellCyclePhase = G_ONE_PHASE;
+    }
+    else if (time_since_birth < GetMDuration() + mG1Duration + GetSDuration())
+    {
+        mCurrentCellCyclePhase = S_PHASE;
+    }
+    else if (time_since_birth < GetMDuration() + mG1Duration + GetSDuration() + GetG2Duration())
+    {
+        mCurrentCellCyclePhase = G_TWO_PHASE;
+    }
 }
 
 void GastricGlandCellCycleModel::InitialiseDaughterCell()
