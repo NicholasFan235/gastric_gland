@@ -67,6 +67,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellPropertyRegistry.hpp"
 #include "CellId.hpp"
 #include "SignalGradient.hpp"
+#include "WntConcentration.hpp"
 
 class GastricGlandSimulation
 {
@@ -102,7 +103,7 @@ public:
         SimulationTime::Destroy();
         RandomNumberGenerator::Destroy();
         CellPropertyRegistry::Instance()->Clear(); // Destroys properties which are still held by a shared pointer
-        //WntConcentration<2>::Destroy();
+        WntConcentration<2>::Destroy();
         SignalGradient<2>::Destroy();
     }
 };

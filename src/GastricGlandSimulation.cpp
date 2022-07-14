@@ -69,7 +69,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     simulator.SetOutputDirectory(testName + "/");
     std::cout << "Writing to output directory: " << simulator.GetOutputDirectory() << std::endl;
-    simulator.SetEndTime(100);
+    simulator.SetEndTime(500);
     
     simulator.SetSamplingTimestepMultiple(12);
 
