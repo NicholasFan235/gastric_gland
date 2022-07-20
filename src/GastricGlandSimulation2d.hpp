@@ -42,7 +42,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WntConcentration.hpp"
 #include "OffLatticeSimulation.hpp"
 #include "VertexBasedCellPopulation.hpp"
-#include "CryptSimulationBoundaryCondition.hpp"
+#include "GastricGlandSimulationBoundaryCondition.hpp"
 #include "CryptCentreBasedDivisionRule.hpp"
 #include "CryptVertexBasedDivisionRule.hpp"
 
@@ -105,9 +105,9 @@ public:
     virtual ~GastricGlandSimulation2d();
 
     /**
-     * Set method for mUseJiggledBottomCells.
+     * Set method for mFixedBottomCells.
      */
-    void UseJiggledBottomCells();
+    void FixBottomCells();
 
     void LabelIsthmusCellAncestors();
 
