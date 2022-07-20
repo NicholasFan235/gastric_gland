@@ -51,6 +51,7 @@ GastricGlandCellCycleModel::GastricGlandCellCycleModel() :
   mIsthmusEndHeight(0.8),
   mBaseHeight(0.02)
 {
+    SetTransitCellG1Duration(10.0);
 }
 
 GastricGlandCellCycleModel::GastricGlandCellCycleModel(const GastricGlandCellCycleModel& rModel)
@@ -74,6 +75,7 @@ GastricGlandCellCycleModel::GastricGlandCellCycleModel(const GastricGlandCellCyc
      * (re)set as soon as InitialiseDaughterCell() is called on the
      * new cell-cycle model.
      */
+    SetTransitCellG1Duration(10.0);
 }
 
 AbstractCellCycleModel* GastricGlandCellCycleModel::CreateCellCycleModel()
