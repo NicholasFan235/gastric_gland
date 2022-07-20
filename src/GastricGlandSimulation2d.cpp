@@ -78,8 +78,8 @@ GastricGlandSimulation2d::GastricGlandSimulation2d(AbstractCellPopulation<2>& rC
 
     if (!mDeleteCellPopulationInDestructor)
     {
-        // Pass a CryptSimulationBoundaryCondition object into mBoundaryConditions
-        MAKE_PTR_ARGS(CryptSimulationBoundaryCondition<2>, p_bc, (&rCellPopulation));
+        // Pass a GastricGlandSimulationBoundaryCondition object into mBoundaryConditions
+        MAKE_PTR_ARGS(GastricGlandSimulationBoundaryCondition<2>, p_bc, (&rCellPopulation));
         AddCellPopulationBoundaryCondition(p_bc);
     }
 }
@@ -110,10 +110,10 @@ void GastricGlandSimulation2d::SetupSolve()
     }
 }
 
-void GastricGlandSimulation2d::UseJiggledBottomCells()
+void GastricGlandSimulation2d::FixBottomCells()
 {
     // The CryptSimulationBoundaryCondition object is the first element of mBoundaryConditions
-    boost::static_pointer_cast<CryptSimulationBoundaryCondition<2> >(mBoundaryConditions[0])->SetUseJiggledBottomCells(true);
+    boost::static_pointer_cast<GastricGlandSimulationBoundaryCondition<2> >(mBoundaryConditions[0])->SetUseFixedBottomCells(true);
 }
 
 void GastricGlandSimulation2d::LabelIsthmusCellAncestors()
@@ -175,10 +175,10 @@ unsigned GastricGlandSimulation2d::GetCellAncestorIndex() const
 void GastricGlandSimulation2d::OutputSimulationParameters(out_stream& rParamsFile)
 {
     double width = mrCellPopulation.GetWidth(0);
-    bool use_jiggled_bottom_cells = boost::static_pointer_cast<CryptSimulationBoundaryCondition<2> >(mBoundaryConditions[0])->GetUseJiggledBottomCells();
+    bool use_fixed_bottom_cells = boost::static_pointer_cast<GastricGlandSimulationBoundaryCondition<2> >(mBoundaryConditions[0])->GetUseFixedBottomCells();
 
     *rParamsFile << "\t\t<CryptCircumference>" << width << "</CryptCircumference>\n";
-    *rParamsFile << "\t\t<UseJiggledBottomCells>" << use_jiggled_bottom_cells << "</UseJiggledBottomCells>\n";
+    *rParamsFile << "\t\t<UseFixedBottomCells>" << use_fixed_bottom_cells << "</UseFixedBottomCells>\n";
 
     // Call method on direct parent class
     OffLatticeSimulation<2>::OutputSimulationParameters(rParamsFile);

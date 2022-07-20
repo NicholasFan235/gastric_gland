@@ -87,7 +87,7 @@ void GastricGlandSimulation::simplifiedModel(
     //MAKE_PTR_ARGS(ExperimentalParietalCellKiller<2>, p_experiment, (&cell_population, 0.4, 100));
     //simulator.AddCellKiller(p_experiment);
 
-    simulator.UseJiggledBottomCells();
+    simulator.FixBottomCells();
     simulator.LabelBaseCellAncestors();
     simulator.LabelIsthmusCellAncestors();
     simulator.LabelNeckCellAncestors();
