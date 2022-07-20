@@ -71,7 +71,7 @@ void GastricGlandSimulation::simplifiedModel(
 
     simulator.SetOutputDirectory(testName + "/");
     std::cout << "Writing to output directory: " << simulator.GetOutputDirectory() << std::endl;
-    simulator.SetEndTime(1000);
+    simulator.SetEndTime(500);
     
     simulator.SetSamplingTimestepMultiple(12);
 
@@ -84,8 +84,8 @@ void GastricGlandSimulation::simplifiedModel(
     MAKE_PTR_ARGS(SloughingCellKiller<2>, p_killer, (&cell_population, glandHeight));
     simulator.AddCellKiller(p_killer);
 
-    //MAKE_PTR_ARGS(ExperimentalParietalCellKiller<2>, p_experiment, (&cell_population, 0.4, 100));
-    //simulator.AddCellKiller(p_experiment);
+    MAKE_PTR_ARGS(ExperimentalParietalCellKiller<2>, p_experiment, (&cell_population, 0.4, 200));
+    simulator.AddCellKiller(p_experiment);
 
     simulator.UseJiggledBottomCells();
     simulator.LabelBaseCellAncestors();

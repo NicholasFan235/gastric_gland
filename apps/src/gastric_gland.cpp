@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
         else
         {
             GastricGlandSimulation sim = GastricGlandSimulation();
-            sim.simplifiedModel("LongHomeostasisSimulation", 10, 40, 40.0,
-              true /*Area based damping*/, true /*Edge based spring constant*/,
+            sim.simplifiedModel("ParietalKillingExperiment", 10, 40, 40.0,
+              true /*Area based damping*/, false /*Edge based spring constant*/,
               0.6 /*Fraction Mature area for division*/,
               0.8 /*Foveolar cell size multiplier*/);
         }
