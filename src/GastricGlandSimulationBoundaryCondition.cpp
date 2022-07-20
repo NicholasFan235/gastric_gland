@@ -36,6 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GastricGlandSimulationBoundaryCondition.hpp"
 #include "WntConcentration.hpp"
 #include "AbstractCentreBasedCellPopulation.hpp"
+#include "MeshBasedCellPopulationWithGhostNodes.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "StemCellProliferativeType.hpp"
 
@@ -58,25 +59,17 @@ void GastricGlandSimulationBoundaryCondition<DIM>::ImposeBoundaryCondition(const
     // We iterate differently depending on whether we are using a centre- or vertex-based model
     if (dynamic_cast<AbstractCentreBasedCellPopulation<DIM>*>(this->mpCellPopulation))
     {
-        AbstractCentreBasedCellPopulation<DIM>* mpCentreBasedCellPopulation = dynamic_cast<AbstractCentreBasedCellPopulation<DIM>*>(this->mpCellPopulation);
-        
-        // Iterate over all nodes associated with real cells to update their positions
-        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = this->mpCellPopulation->Begin();
-             cell_iter != this->mpCellPopulation->End();
-             ++cell_iter)
+        if (mFixedBottomCells && dynamic_cast<MeshBasedCellPopulationWithGhostNodes<DIM>*>(this->mpCellPopulation))
         {
-            // Get index of node associated with cell
-            unsigned node_index = this->mpCellPopulation->GetLocationIndexUsingCell(*cell_iter);
-
-            // Get pointer to this node
-            Node<DIM>* p_node = this->mpCellPopulation->GetNode(node_index);
-
-            if (mFixedBottomCells && mpCentreBasedCellPopulation->IsGhostNode(node_index))
+            // If has ghost nodes, fix the base layer
+            MeshBasedCellPopulationWithGhostNodes<DIM>* popWithGhosts =
+                dynamic_cast<MeshBasedCellPopulationWithGhostNodes<DIM>*>(this->mpCellPopulation);
+            for (const unsigned index : popWithGhosts->GetGhostNodeIndices())
             {
-                /*
-                 * If WntConcentration is not set up then stem cells must be pinned,
-                 * so we reset the location of each stem cell.
-                 */
+                // Get pointer to this node
+                Node<DIM>* p_node = this->mpCellPopulation->GetNode(index);
+
+                
                 double y = p_node->GetPoint().rGetLocation()[1];
                 if (y < 1)
                 {
@@ -87,6 +80,18 @@ void GastricGlandSimulationBoundaryCondition<DIM>::ImposeBoundaryCondition(const
                     p_node->rGetModifiableLocation() = old_node_location;
                 }
             }
+        }
+
+        // Iterate over all nodes associated with real cells to update their positions
+        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = this->mpCellPopulation->Begin();
+             cell_iter != this->mpCellPopulation->End();
+             ++cell_iter)
+        {
+            // Get index of node associated with cell
+            unsigned node_index = this->mpCellPopulation->GetLocationIndexUsingCell(*cell_iter);
+
+            // Get pointer to this node
+            Node<DIM>* p_node = this->mpCellPopulation->GetNode(node_index);
 
             // Any cell that has moved below the bottom of the crypt must be moved back up
             if (p_node->rGetLocation()[DIM-1] < 0.0)
