@@ -101,7 +101,7 @@ public:
                   AbstractMesh<2,2>* pMesh,
                   const std::vector<unsigned> locationIndices,
                   bool randomBirthTimes,
-                  double yBase = 1.5,
+                  double yBase = 4,
                   double yNeck = 28.0,
                   double yIsthmus = 30.0,
                   bool initialiseCells = false);
