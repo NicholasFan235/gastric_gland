@@ -49,7 +49,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 GastricGlandCellCycleModel::GastricGlandCellCycleModel() :
   mIsthmusBeginHeight(0.7),
   mIsthmusEndHeight(0.8),
-  mBaseHeight(0.02)
+  mBaseHeight(0.08)
 {
     SetTransitCellG1Duration(10.0);
 }
