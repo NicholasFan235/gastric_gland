@@ -27,6 +27,13 @@
 #include "GastricGlandBaseCellKiller.hpp"
 #include "ExperimentalParietalCellKiller.hpp"
 
+// V2 Features
+#include "GastricGlandBasePosition.hpp"
+#include "GlandBaseTrackingModifier.hpp"
+#include "GastricGlandCellCycleModelV2.hpp"
+#include "FoveolarCellKiller.hpp"
+
+
 #include <iostream>
 #include <vector>
 
