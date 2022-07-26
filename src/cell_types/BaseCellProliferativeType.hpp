@@ -33,12 +33,42 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "FoveolarCellProliferativeType.hpp"
+#ifndef BASECELLPROLIFERATIVETYPE_HPP_
+#define BASECELLPROLIFERATIVETYPE_HPP_
 
-FoveolarCellProliferativeType::FoveolarCellProliferativeType()
-    : DifferentiatedCellProliferativeType(4)
-{}
+#include "StemCellProliferativeType.hpp"
+#include "ChasteSerialization.hpp"
+#include <boost/serialization/base_object.hpp>
 
-#include "SerializationExportWrapperForCpp.hpp"
+/**
+ * Subclass of StemCellProliferativeType defining a cell in the gastric gland base.
+ */
+class BaseCellProliferativeType : public StemCellProliferativeType
+{
+private:
+    /** Needed for serialization. */
+    friend class boost::serialization::access;
+    /**
+     * Archive the cell proliferative type.
+     *
+     * @param archive the archive
+     * @param version the current version of this class
+     */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
+    {
+        archive & boost::serialization::base_object<StemCellProliferativeType>(*this);
+    }
+
+public:
+    /**
+     * Constructor.
+     */
+    BaseCellProliferativeType(unsigned colour=3);
+};
+
+#include "SerializationExportWrapper.hpp"
 // Declare identifier for the serializer
-CHASTE_CLASS_EXPORT(FoveolarCellProliferativeType)
+CHASTE_CLASS_EXPORT(BaseCellProliferativeType)
+
+#endif /*BASECELLPROLIFERATIVETYPE_HPP_*/

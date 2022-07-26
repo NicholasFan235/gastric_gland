@@ -74,6 +74,8 @@ protected:
     double mIsthmusBeginHeight;
     double mIsthmusEndHeight;
     double mBaseHeight;
+    double mBaseG1Duration;
+    double mIsthmusG1Duration;
 
     /**
      * @return the Wnt level experienced by the cell.
@@ -152,6 +154,12 @@ public:
 
     double GetBaseHeight() const;
     void SetBaseHeight(double height);
+
+    double GetBaseG1Duration() const;
+    void SetBaseG1Duration(double duration);
+
+    double GetIsthmusG1Duration() const;
+    void SetIsthmusG1Duration(double duration);
 
     /**
      * Overridden OutputCellCycleModelParameters() method.

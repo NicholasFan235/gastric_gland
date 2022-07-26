@@ -57,6 +57,7 @@ class GastricGlandSimulation2d : public OffLatticeSimulation<2>
 protected:
 
     unsigned m_cellAncestorIndex;
+    unsigned m_maxCells;
 
     /** Needed for serialization. */
     friend class boost::serialization::access;
@@ -81,6 +82,8 @@ protected:
      * Write initial beta catenin results to file if required.
      */
     void SetupSolve();
+
+    bool StoppingEventHasOccurred() override;
 
 public:
 
@@ -116,6 +119,9 @@ public:
     void LabelNeckCellAncestors();
 
     unsigned GetCellAncestorIndex() const;
+
+    unsigned GetMaxCells() const;
+    void SetMaxCells(unsigned n);
 
     /**
      * Outputs simulation parameters to file

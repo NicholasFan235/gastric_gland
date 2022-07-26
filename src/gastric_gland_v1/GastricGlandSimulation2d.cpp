@@ -110,6 +110,12 @@ void GastricGlandSimulation2d::SetupSolve()
     }
 }
 
+bool GastricGlandSimulation2d::StoppingEventHasOccurred()
+{
+    if (mrCellPopulation.GetNumRealCells() > m_maxCells) return true;
+    return false;
+}
+
 void GastricGlandSimulation2d::FixBottomCells()
 {
     // The CryptSimulationBoundaryCondition object is the first element of mBoundaryConditions
@@ -172,6 +178,9 @@ unsigned GastricGlandSimulation2d::GetCellAncestorIndex() const
     return m_cellAncestorIndex;
 }
 
+unsigned GastricGlandSimulation2d::GetMaxCells() const { return m_maxCells; }
+void GastricGlandSimulation2d::SetMaxCells(unsigned n) { m_maxCells = n; }
+
 void GastricGlandSimulation2d::OutputSimulationParameters(out_stream& rParamsFile)
 {
     double width = mrCellPopulation.GetWidth(0);
@@ -179,6 +188,7 @@ void GastricGlandSimulation2d::OutputSimulationParameters(out_stream& rParamsFil
 
     *rParamsFile << "\t\t<CryptCircumference>" << width << "</CryptCircumference>\n";
     *rParamsFile << "\t\t<UseFixedBottomCells>" << use_fixed_bottom_cells << "</UseFixedBottomCells>\n";
+    *rParamsFile << "\t\t<MaxCells>" << m_maxCells << "</MaxCells>\n";
 
     // Call method on direct parent class
     OffLatticeSimulation<2>::OutputSimulationParameters(rParamsFile);

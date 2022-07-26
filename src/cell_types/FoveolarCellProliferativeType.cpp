@@ -33,42 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef NECKCELLPROLIFERATIVETYPE_HPP_
-#define NECKCELLPROLIFERATIVETYPE_HPP_
+#include "FoveolarCellProliferativeType.hpp"
 
-#include "DifferentiatedCellProliferativeType.hpp"
-#include "ChasteSerialization.hpp"
-#include <boost/serialization/base_object.hpp>
+FoveolarCellProliferativeType::FoveolarCellProliferativeType(unsigned colour)
+    : DifferentiatedCellProliferativeType(colour)
+{}
 
-/**
- * Subclass of DifferentiatedCellProliferativeType defining a differentiated neck cell.
- */
-class NeckCellProliferativeType : public DifferentiatedCellProliferativeType
-{
-private:
-    /** Needed for serialization. */
-    friend class boost::serialization::access;
-    /**
-     * Archive the cell proliferative type.
-     *
-     * @param archive the archive
-     * @param version the current version of this class
-     */
-    template<class Archive>
-    void serialize(Archive & archive, const unsigned int version)
-    {
-        archive & boost::serialization::base_object<DifferentiatedCellProliferativeType>(*this);
-    }
-
-public:
-    /**
-     * Constructor.
-     */
-    NeckCellProliferativeType();
-};
-
-#include "SerializationExportWrapper.hpp"
+#include "SerializationExportWrapperForCpp.hpp"
 // Declare identifier for the serializer
-CHASTE_CLASS_EXPORT(NeckCellProliferativeType)
-
-#endif /*NECKCELLPROLIFERATIVETYPE_HPP_*/
+CHASTE_CLASS_EXPORT(FoveolarCellProliferativeType)

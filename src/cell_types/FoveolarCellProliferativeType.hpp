@@ -64,7 +64,7 @@ public:
     /**
      * Constructor.
      */
-    FoveolarCellProliferativeType();
+    FoveolarCellProliferativeType(unsigned colour=4);
 };
 
 #include "SerializationExportWrapper.hpp"

@@ -68,6 +68,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellId.hpp"
 #include "SignalGradient.hpp"
 #include "WntConcentration.hpp"
+#include "Parameters.hpp"
+#include "GastricGlandBasePosition.hpp"
 
 class GastricGlandSimulation
 {
@@ -75,21 +77,17 @@ public:
     GastricGlandSimulation() = default;
     ~GastricGlandSimulation() = default;
 
+    int run(int argc, char *argv[]);
+
     void simplifiedModel(
-        std::string testName,
-        int nWidth, int nHeight,
-        double glandHeight,
-        bool useAreaBasedDampingConstant,
-        bool useEdgeBasedSpringConstant,
-        double areaForDivision, // Fraction of mature area required for division,
-        double foveolarSizeMultiplier // Multiplier for foveolar cell rest length (foveolar cells smaller)
+        const GastricGlandParameters& params
     );
 
 
-    void setUp()
+    void setUp(unsigned seed, double startTime=0.0)
     {
-        SimulationTime::Instance()->SetStartTime(0.0);
-        RandomNumberGenerator::Instance()->Reseed(0);
+        SimulationTime::Instance()->SetStartTime(startTime);
+        RandomNumberGenerator::Instance()->Reseed(seed);
         // //Unnecessary since previous test's tearDown will have cleared:
         // CellPropertyRegistry::Instance()->Clear();
         CellId::ResetMaxCellId();
@@ -105,6 +103,7 @@ public:
         CellPropertyRegistry::Instance()->Clear(); // Destroys properties which are still held by a shared pointer
         WntConcentration<2>::Destroy();
         SignalGradient<2>::Destroy();
+        GastricGlandBasePosition<2>::Destroy();
     }
 };
 

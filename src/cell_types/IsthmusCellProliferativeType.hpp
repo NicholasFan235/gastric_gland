@@ -33,62 +33,42 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifndef ISTHMUSCELLPROLIFERATIVETYPE_HPP_
+#define ISTHMUSCELLPROLIFERATIVETYPE_HPP_
+
+#include "StemCellProliferativeType.hpp"
+#include "ChasteSerialization.hpp"
+#include <boost/serialization/base_object.hpp>
+
 /**
- * @file
- *
- * This file gives an example of how you can create your own executable
- * in a user project.
+ * Subclass of StemCellProliferativeType defining a cell in the gastric gland base.
  */
-
-#include <iostream>
-#include <string>
-
-#include "ExecutableSupport.hpp"
-#include "Exception.hpp"
-#include "PetscTools.hpp"
-#include "PetscException.hpp"
-
-#include "GastricGlandSimulation.hpp"
-
-int main(int argc, char *argv[])
+class IsthmusCellProliferativeType : public StemCellProliferativeType
 {
-    // This sets up PETSc and prints out copyright information, etc.
-    ExecutableSupport::StandardStartup(&argc, &argv);
-
-    int exit_code = ExecutableSupport::EXIT_OK;
-
-    // You should put all the main code within a try-catch, to ensure that
-    // you clean up PETSc before quitting.
-    try
+private:
+    /** Needed for serialization. */
+    friend class boost::serialization::access;
+    /**
+     * Archive the cell proliferative type.
+     *
+     * @param archive the archive
+     * @param version the current version of this class
+     */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
     {
-      if (argc<0)
-        {
-            ExecutableSupport::PrintError("Usage: ExampleApp arguments ...", true);
-            exit_code = ExecutableSupport::EXIT_BAD_ARGUMENTS;
-        }
-        else
-        {
-            GastricGlandSimulation sim = GastricGlandSimulation();
-            sim.run(argc, argv);
-            //sim.simplifiedModel("ParietalKillingExperiment", 10, 40, 40.0,
-            //    true /*Area based damping*/, false /*Edge based spring constant*/,
-            //    0.6 /*Fraction Mature area for division*/,
-            //    0.8 /*Foveolar cell size multiplier*/);
-
-            return ExecutableSupport::EXIT_OK;
-        }
-    }
-    catch (const Exception& e)
-    {
-        ExecutableSupport::PrintError(e.GetMessage());
-        exit_code = ExecutableSupport::EXIT_ERROR;
+        archive & boost::serialization::base_object<StemCellProliferativeType>(*this);
     }
 
-    // Optional - write the machine info to file.
-    ExecutableSupport::WriteMachineInfoFile("machine_info");
+public:
+    /**
+     * Constructor.
+     */
+    IsthmusCellProliferativeType(unsigned colour=6);
+};
 
-    // End by finalizing PETSc, and returning a suitable exit code.
-    // 0 means 'no error'
-    ExecutableSupport::FinalizePetsc();
-    return exit_code;
-}
+#include "SerializationExportWrapper.hpp"
+// Declare identifier for the serializer
+CHASTE_CLASS_EXPORT(IsthmusCellProliferativeType)
+
+#endif /*ISTHMUSCELLPROLIFERATIVETYPE_HPP_*/

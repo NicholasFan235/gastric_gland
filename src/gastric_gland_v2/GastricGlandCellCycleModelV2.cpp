@@ -40,16 +40,21 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DifferentiatedCellProliferativeType.hpp"
 #include "FoveolarCellProliferativeType.hpp"
 #include "NeckCellProliferativeType.hpp"
+#include "IsthmusCellProliferativeType.hpp"
+#include "BaseCellProliferativeType.hpp"
 #include "CellLabel.hpp"
 #include "WildTypeCellMutationState.hpp"
 #include "ApcOneHitCellMutationState.hpp"
 #include "ApcTwoHitCellMutationState.hpp"
 #include "BetaCateninOneHitCellMutationState.hpp"
+#include "GastricGlandBasePosition.hpp"
 
 GastricGlandCellCycleModelV2::GastricGlandCellCycleModelV2() :
-  mIsthmusBeginHeight(0.7),
-  mIsthmusEndHeight(0.8),
-  mBaseHeight(0.02)
+  mIsthmusBeginHeight(28.0),
+  mIsthmusEndHeight(32.0),
+  mBaseHeight(3.0),
+  mBaseG1Duration(200),
+  mIsthmusG1Duration(10)
 {
     SetTransitCellG1Duration(10.0);
 }
@@ -58,7 +63,9 @@ GastricGlandCellCycleModelV2::GastricGlandCellCycleModelV2(const GastricGlandCel
    : AbstractSimplePhaseBasedCellCycleModel(rModel),
    mIsthmusBeginHeight(rModel.mIsthmusBeginHeight),
    mIsthmusEndHeight(rModel.mIsthmusEndHeight),
-   mBaseHeight(rModel.mBaseHeight)
+   mBaseHeight(rModel.mBaseHeight),
+   mBaseG1Duration(rModel.mBaseG1Duration),
+   mIsthmusG1Duration(rModel.mIsthmusG1Duration)
 {
     /*
      * Initialize only those member variables defined in this class.
@@ -89,7 +96,15 @@ void GastricGlandCellCycleModelV2::SetG1Duration()
 
     RandomNumberGenerator* p_gen = RandomNumberGenerator::Instance();
 
-    if (mpCell->GetCellProliferativeType()->IsSubType<StemCellProliferativeType>() ||
+    if (mpCell->GetCellProliferativeType()->IsType<IsthmusCellProliferativeType>())
+    {
+        mG1Duration = mIsthmusG1Duration;
+    }
+    else if (mpCell->GetCellProliferativeType()->IsType<BaseCellProliferativeType>())
+    {
+        mG1Duration = mBaseG1Duration;
+    }
+    else if (mpCell->GetCellProliferativeType()->IsSubType<StemCellProliferativeType>() ||
         mpCell->GetCellProliferativeType()->IsSubType<TransitCellProliferativeType>())
     {
         mG1Duration = p_gen->NormalRandomDeviate(GetTransitCellG1Duration(), 1.0);
@@ -118,11 +133,13 @@ void GastricGlandCellCycleModelV2::UpdateCellCyclePhase()
     {
         EXCEPTION("Gastric gland cell cycle model only allowed for LINEAR Wnt concentration.");
     }
-    double height = 1-GetWntLevel();
+    double lowest_point = GastricGlandBasePosition<2>::Instance()->GetBasePosition()[1];
+    AbstractCellPopulation<2>& population = WntConcentration<2>::Instance()->rGetCellPopulation();
+    double y = population.GetNode(population.GetLocationIndexUsingCell(mpCell))->rGetLocation()[1];
 
     // Allow the cell to divide if in either Base or Isthmus region
     // Use Wnt signal strength to determine position in gland
-    if (height < mBaseHeight)
+    if (y < lowest_point + mBaseHeight)
     {
         // If in Base
         // Make transit cell
@@ -136,7 +153,7 @@ void GastricGlandCellCycleModelV2::UpdateCellCyclePhase()
             mG1Duration += GetAge(); // Put cell at start of G1 phase, otherwise aged cell will immediately divide
         }
     }
-    else if (height < mIsthmusBeginHeight)
+    else if (y < mIsthmusBeginHeight)
     {
         // If in Neck
         if (!mpCell->GetCellProliferativeType()->IsType<NeckCellProliferativeType>()
@@ -147,7 +164,7 @@ void GastricGlandCellCycleModelV2::UpdateCellCyclePhase()
             mpCell->SetCellProliferativeType(p_neck_type);
         }
     }
-    else if (height < mIsthmusEndHeight)
+    else if (y < mIsthmusEndHeight)
     {
         // If in Isthmus
         // Make transit cell
@@ -217,6 +234,12 @@ void GastricGlandCellCycleModelV2::SetIsthmusEndHeight(double height) { mIsthmus
 
 double GastricGlandCellCycleModelV2::GetBaseHeight() const { return mBaseHeight; }
 void GastricGlandCellCycleModelV2::SetBaseHeight(double height) { mBaseHeight = height; }
+
+double GastricGlandCellCycleModelV2::GetBaseG1Duration() const { return mBaseG1Duration; }
+void GastricGlandCellCycleModelV2::SetBaseG1Duration(double duration) { mBaseG1Duration = duration; }
+
+double GastricGlandCellCycleModelV2::GetIsthmusG1Duration() const { return mIsthmusG1Duration; }
+void GastricGlandCellCycleModelV2::SetIsthmusG1Duration(double duration) { mIsthmusG1Duration = duration; }
 
 double GastricGlandCellCycleModelV2::GetWntLevel() const
 {
@@ -288,6 +311,8 @@ void GastricGlandCellCycleModelV2::OutputCellCycleModelParameters(out_stream& rP
     *rParamsFile << "\t\t\t<IsthmusBeginHeight>" << mIsthmusBeginHeight << "</IsthmusBeginHeight>\n";
     *rParamsFile << "\t\t\t<IsthmusEndHeight>" << mIsthmusEndHeight << "</IsthmusEndHeight>\n";
     *rParamsFile << "\t\t\t<BaseHeight>" << mBaseHeight << "</BaseHeight>\n";
+    *rParamsFile << "\t\t\t<BaseG1Duration>" << mBaseG1Duration << "</BaseG1Duration>\n";
+    *rParamsFile << "\t\t\t<IsthmusG1Duration>" << mIsthmusG1Duration << "</IsthmusG1Duration>\n";
 
     // Call method on direct parent class
     AbstractSimplePhaseBasedCellCycleModel::OutputCellCycleModelParameters(rParamsFile);

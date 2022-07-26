@@ -33,12 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "NeckCellProliferativeType.hpp"
+#include "IsthmusCellProliferativeType.hpp"
 
-NeckCellProliferativeType::NeckCellProliferativeType()
-    : DifferentiatedCellProliferativeType(5)
+IsthmusCellProliferativeType::IsthmusCellProliferativeType(unsigned colour)
+    : StemCellProliferativeType(colour)
 {}
 
 #include "SerializationExportWrapperForCpp.hpp"
 // Declare identifier for the serializer
-CHASTE_CLASS_EXPORT(NeckCellProliferativeType)
+CHASTE_CLASS_EXPORT(IsthmusCellProliferativeType)
