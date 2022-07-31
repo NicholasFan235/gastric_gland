@@ -1,5 +1,6 @@
 #include "GastricGlandSimulation.hpp"
 
+#include "CellBasedSimulationArchiver.hpp"
 #include "CylindricalHoneycombMeshGenerator.hpp"
 #include "GastricGlandCellsGenerator.hpp"
 #include "UniformG1GenerationalCellCycleModel.hpp"
@@ -171,6 +172,25 @@ void GastricGlandSimulation::simplifiedModel(
 
     std::cout << "Beginning Solve()..." << std::endl;
     simulator.Solve();
+
+    CellBasedSimulationArchiver<2, GastricGlandSimulation2d>::Save(&simulator);
+
+    for (int i = 1; i <= 4; i++)
+    {
+        // Load where left off
+        GastricGlandSimulation2d* p_simulator =
+            CellBasedSimulationArchiver<2, GastricGlandSimulation2d>::Load(
+                "SteadyStateCrypt", params.simulation_time*i);
+        
+        p_simulator->LabelBaseCellAncestors();
+        p_simulator->LabelIsthmusCellAncestors();
+        p_simulator->LabelNeckCellAncestors();
+        p_simulator->SetEndTime(params.simulation_time*(i+1));
+        p_simulator->Solve();
+        CellBasedSimulationArchiver<2, GastricGlandSimulation2d>::Save(p_simulator);
+        delete p_simulator;
+    }
+
     tearDown();
     std::cout << "Completed Toy Gastric Gland Model" << std::endl;
 }
