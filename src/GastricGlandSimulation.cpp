@@ -180,7 +180,7 @@ void GastricGlandSimulation::simplifiedModel(
         // Load where left off
         GastricGlandSimulation2d* p_simulator =
             CellBasedSimulationArchiver<2, GastricGlandSimulation2d>::Load(
-                "SteadyStateCrypt", params.simulation_time*i);
+                params.output_directory + "/sim_" + params.simulation_id, params.simulation_time*i);
         
         p_simulator->LabelBaseCellAncestors();
         p_simulator->LabelIsthmusCellAncestors();
